@@ -35,8 +35,7 @@ The API uses token-based authentication with **Laravel Sanctum**.
 ### 1. Clone the project
 
 ```bash
-git clone [https://github.com/Guettaf-Mazigh/Blog-api.git](https://github.com/Guettaf-Mazigh/Blog-api.git)
-cd Blog-api
+git clone https://github.com/Guettaf-Mazigh/Blog-api.git
 ```
 
 ### 2. Install dependencies

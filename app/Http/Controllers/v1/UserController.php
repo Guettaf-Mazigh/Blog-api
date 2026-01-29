@@ -39,4 +39,12 @@ class UserController extends Controller
             'token_type' => 'Bearer'
         ]);
     }
+
+    public function show(User $user){
+        return new UserResource($user);
+    }
+
+    public function index(){
+        return UserResource::collection(User::paginate(10));
+    }
 }

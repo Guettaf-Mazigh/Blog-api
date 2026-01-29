@@ -12,14 +12,6 @@
 A RESTful API built with **Laravel 12** for managing users and blog posts. This project is currently under development.
 The API uses token-based authentication with **Laravel Sanctum**.
 
-## Technologies & Tools
-
-- **Framework:** Laravel 12 & PHP 8.5
-- **Database:** SQLite (TablePlus)
-- **Auth:** Laravel Sanctum
-- **Environment:** Laravel Herd
-- **Testing:** Postman
-
 ## Technologies
 
 - Laravel 12

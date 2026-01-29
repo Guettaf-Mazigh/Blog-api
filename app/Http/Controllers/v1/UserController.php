@@ -47,4 +47,11 @@ class UserController extends Controller
     public function index(){
         return UserResource::collection(User::paginate(10));
     }
+
+    public function logout(Request $request){
+        $request->user()->currentAccessToken()->delete();
+        return response()->json([
+            'message' => 'Successfully logged out'
+        ],200);
+    }
 }

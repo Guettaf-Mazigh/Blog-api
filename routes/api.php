@@ -14,4 +14,5 @@ Route::prefix('/v1')->group(function(){
     Route::post('/login',[UserController::class,'login'])->name('login');
     Route::get('/users/{user}',[UserController::class,'show'])->name('show');
     Route::get('/users',[UserController::class,'index'])->name('index');
+    Route::post('/logout',[UserController::class,'logout'])->name('logout')->middleware('auth:sanctum');
 });

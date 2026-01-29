@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\v1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\RegisterUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -20,5 +22,21 @@ class UserController extends Controller
         ]);
 
         return new UserResource($user);
+    }
+
+    public function login(LoginUserRequest $request){
+        $credentials = $request->validated();
+        if(!Auth::attempt($credentials)){
+            return response()->json([
+                'message' => 'No user with these credentials'
+            ],401);
+        }
+
+        $user = User::where('email',$credentials['email'])->firstOrFail();
+        $token = $user->createToken('auth_token')->plainTextToken;
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'Bearer'
+        ]);
     }
 }

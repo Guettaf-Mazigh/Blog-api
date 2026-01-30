@@ -8,6 +8,7 @@ use App\Http\Requests\RegisterUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -69,5 +70,12 @@ class UserController extends Controller
         return response()->json([
             'message' => 'Successfully logged out'
         ], 200);
+    }
+
+    public function destroy(User $user){
+        Gate::authorize('delete',$user);
+        $user->tokens()->delete();
+        $user->delete();
+        return response()->noContent();
     }
 }

@@ -8,12 +8,12 @@ use App\Http\Requests\RegisterUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function register(RegisterUserRequest $request){
+    public function register(RegisterUserRequest $request)
+    {
         $data = $request->validated();
         $user = User::create([
             'name' => $data['name'],
@@ -21,37 +21,53 @@ class UserController extends Controller
             'password' => Hash::make($data['password'])
         ]);
 
-        return new UserResource($user);
+        return (new UserResource($user))
+            ->response()
+            ->setStatusCode(201);
     }
 
-    public function login(LoginUserRequest $request){
+    public function login(LoginUserRequest $request)
+    {
         $credentials = $request->validated();
-        if(!Auth::attempt($credentials)){
+
+        $user = User::where('email', $credentials['email'])->first();
+        if (!$user || !Hash::check($credentials['password'], $user->password)) {
             return response()->json([
-                'message' => 'No user with these credentials'
-            ],401);
+                'message' => 'Invalid credentials'
+            ], 401);
         }
 
-        $user = User::where('email',$credentials['email'])->firstOrFail();
         $token = $user->createToken('auth_token')->plainTextToken;
         return response()->json([
             'access_token' => $token,
-            'token_type' => 'Bearer'
+            'token_type' => 'Bearer',
+            'user' => new UserResource($user),
         ]);
     }
 
-    public function show(User $user){
+    public function show(User $user)
+    {
         return new UserResource($user);
     }
 
-    public function index(){
+    public function index()
+    {
         return UserResource::collection(User::paginate(10));
     }
 
-    public function logout(Request $request){
-        $request->user()->currentAccessToken()->delete();
+    public function logout(Request $request)
+    {
+        $user = $request->user();
+        $currentToken = $user?->currentAccessToken();
+
+        if ($currentToken) {
+            $currentToken->delete();
+        } else {
+            $user?->tokens()->delete();
+        }
+
         return response()->json([
             'message' => 'Successfully logged out'
-        ],200);
+        ], 200);
     }
 }

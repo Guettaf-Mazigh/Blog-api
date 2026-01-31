@@ -14,7 +14,7 @@ Route::prefix('/v1')->group(function () {
     Route::post('/register', [UserController::class, 'register'])->name('register')->middleware('throttle:10,1');
     Route::post('/login', [UserController::class, 'login'])->name('login')->middleware('throttle:10,1');
 
-    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show')->middleware('auth:sanctum');
+    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show')->middleware(['auth:sanctum','can:show,user']);
     Route::get('/users', [UserController::class, 'index'])->name('index')->middleware('auth:sanctum');
     Route::post('/logout', [UserController::class, 'logout'])->name('logout')->middleware('auth:sanctum');
     Route::delete('/users/{user}',[UserController::class,'destroy'])->name('users.destroy')->middleware(['auth:sanctum','can:delete,user']);

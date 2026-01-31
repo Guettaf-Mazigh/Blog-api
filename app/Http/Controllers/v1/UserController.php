@@ -5,10 +5,10 @@ namespace App\Http\Controllers\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\RegisterUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
@@ -73,9 +73,25 @@ class UserController extends Controller
     }
 
     public function destroy(User $user){
-        Gate::authorize('delete',$user);
         $user->tokens()->delete();
         $user->delete();
         return response()->noContent();
+    }
+
+    public function update(UpdateUserRequest $request, User $user){
+        $data = $request->validated();
+        if(array_key_exists('name',$data)){
+            $updates['name'] = $data['name'];
+        }
+        if(array_key_exists('email',$data)){
+            $updates['email'] = $data['email'];
+        }
+        if(array_key_exists('password',$data)){
+            $updates['password'] = Hash::make($data['password']);
+        }
+        if(!empty($updates)){
+            $user->update($updates);
+        }
+        return new UserResource($user->refresh());
     }
 }

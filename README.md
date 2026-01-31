@@ -50,7 +50,7 @@ touch database/database.sqlite
 php artisan migrate
 ```
 
-### 5. Lunch teh server
+### 5. Lunch the server
 
 ```bash
 php artisan serve

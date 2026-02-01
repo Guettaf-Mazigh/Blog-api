@@ -19,4 +19,4 @@ Route::prefix('/v1')->group(function () {
     Route::post('/logout', [UserController::class, 'logout'])->name('logout')->middleware('auth:sanctum');
     Route::delete('/users/{user}',[UserController::class,'destroy'])->name('users.destroy')->middleware(['auth:sanctum','can:delete,user']);
     Route::patch('/users/{user}',[UserController::class,'update'])->name('users.update')->middleware('auth:sanctum');
-    });
+});

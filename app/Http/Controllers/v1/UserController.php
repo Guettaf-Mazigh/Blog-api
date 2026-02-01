@@ -10,6 +10,7 @@ use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
@@ -48,11 +49,13 @@ class UserController extends Controller
 
     public function show(User $user)
     {
+        Gate::authorize('view',$user);
         return new UserResource($user);
     }
 
     public function index()
     {
+        Gate::authorize('viewAny',User::class);
         return UserResource::collection(User::paginate(10));
     }
 
@@ -72,24 +75,27 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function destroy(User $user){
+    public function destroy(User $user)
+    {
+        Gate::authorize('delete', $user);
         $user->tokens()->delete();
         $user->delete();
         return response()->noContent();
     }
 
-    public function update(UpdateUserRequest $request, User $user){
+    public function update(UpdateUserRequest $request, User $user)
+    {
         $data = $request->validated();
-        if(array_key_exists('name',$data)){
+        if (array_key_exists('name', $data)) {
             $updates['name'] = $data['name'];
         }
-        if(array_key_exists('email',$data)){
+        if (array_key_exists('email', $data)) {
             $updates['email'] = $data['email'];
         }
-        if(array_key_exists('password',$data)){
+        if (array_key_exists('password', $data)) {
             $updates['password'] = Hash::make($data['password']);
         }
-        if(!empty($updates)){
+        if (!empty($updates)) {
             $user->update($updates);
         }
         return new UserResource($user->refresh());

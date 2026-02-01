@@ -13,10 +13,9 @@ Route::prefix('/v1')->group(function () {
 
     Route::post('/register', [UserController::class, 'register'])->name('register')->middleware('throttle:10,1');
     Route::post('/login', [UserController::class, 'login'])->name('login')->middleware('throttle:10,1');
-
-    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show')->middleware(['auth:sanctum','can:view,user']);
-    Route::get('/users', [UserController::class, 'index'])->name('index')->middleware(['auth:sanctum','can:viewAny,App\Models\User']);
     Route::post('/logout', [UserController::class, 'logout'])->name('logout')->middleware('auth:sanctum');
-    Route::delete('/users/{user}',[UserController::class,'destroy'])->name('users.destroy')->middleware(['auth:sanctum','can:delete,user']);
-    Route::patch('/users/{user}',[UserController::class,'update'])->name('users.update')->middleware('auth:sanctum');
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::apiResource('users', UserController::class)->only(['index', 'show', 'update', 'destroy']);
+    });
 });

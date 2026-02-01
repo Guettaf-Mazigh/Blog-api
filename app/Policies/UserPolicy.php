@@ -10,14 +10,18 @@ class UserPolicy
 
     public function delete(User $user, User $model): bool
     {
-        return $user->id === $model->id;
+        return $user->id === $model->id || $user->role === 'admin';
     }
 
     public function update(User $user, User $model): bool{
-        return $user->id === $model->id;
+        return $user->id === $model->id || $user->role === 'admin';
     }
 
-    public function show(User $user, User $model): bool{
-        return $user->id === $model->id;
+    public function view(User $user, User $model): bool{
+        return $user->id === $model->id || $user->role === 'admin';
+    }
+
+    public function viewAny(User $user): bool{
+        return $user->role === 'admin';
     }
 }

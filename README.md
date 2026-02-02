@@ -11,6 +11,8 @@
 
 A RESTful API for managing users and posts, built with **Laravel 12** and secured with **Laravel Sanctum**.
 
+> Status: Under development (WIP). Features may change; not production-ready.
+
 ## Stack
 
 - Laravel 12, PHP 8.5

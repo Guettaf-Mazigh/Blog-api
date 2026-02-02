@@ -7,51 +7,87 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## Blog API - Laravel
+## Blog API (Laravel)
 
-A RESTful API built with **Laravel 12** for managing users and blog posts. This project is currently under development.
-The API uses token-based authentication with **Laravel Sanctum**.
+A RESTful API for managing users and posts, built with **Laravel 12** and secured with **Laravel Sanctum**.
 
-## Technologies
+## Stack
 
-- Laravel 12
-- PHP 8.5
-- SQLite
-- Laravel Sanctum
-- Postman (for API testing)
-- Herd Laravel
-- TablePlus (for the DB)
+- Laravel 12, PHP 8.5
+- SQLite (local development)
+- Laravel Sanctum (token-based auth)
 
-## Instalation
+## Features
 
-### 1. Clone the project
+- **Authentication**: Register, login, logout; `GET /v1/user` returns the current authenticated user.
+- **Users**: Protected endpoints for listing, viewing, updating, and deleting users.
+    - Authorization via `UserPolicy`: owners can view/update/delete their own record; admins can list all users.
+- **Posts**:
+    - Public `GET /v1/posts` list.
+    - Protected create/update/delete (behind `auth:sanctum`).
+- **Resources**: `UserResource` and `PostResource` to shape responses. `PostResource` includes `author` when the relation is eager-loaded.
+- **Rate limiting**: `throttle:10,1` (10 requests/minute) on `login` and `register`.
+- **Versioning**: All endpoints are namespaced under `/v1` to allow backwards-compatible changes.
+
+## API Endpoints
+
+Base path: `/api/v1`
+
+- `POST /register` — Create account (rate limited).
+- `POST /login` — Issue token (rate limited).
+- `POST /logout` — Revoke current token (auth required).
+- `GET /user` — Current authenticated user (auth required).
+- `GET /posts` — List posts (public).
+- `POST /posts` — Create post (auth required).
+- `PATCH /posts/{post}` — Update post (auth required).
+- `DELETE /posts/{post}` — Delete post (auth required).
+- `GET /users` — List users (auth required, admin by policy).
+- `GET /users/{user}` — Show user (auth required; owner/admin).
+- `PATCH /users/{user}` — Update user (auth required; owner/admin).
+- `DELETE /users/{user}` — Delete user (auth required; owner/admin).
+
+- `DELETE /users/{user}` — Delete user (auth required; owner/admin).
+
+## Versioning
+
+This API uses path-based versioning. All routes are grouped under the `/v1` prefix (see [routes/api.php](routes/api.php)), e.g. `GET /api/v1/posts`. Future changes can be introduced under `/v2` without breaking existing clients.
+
+## Installation
+
+### 1) Clone
 
 ```bash
 git clone https://github.com/Guettaf-Mazigh/Blog-api.git
+cd Blog-api
 ```
 
-### 2. Install dependencies
+### 2) Dependencies
 
 ```bash
 composer install
 ```
 
-### 3. Environment setup
+### 3) Environment
 
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-### 4. Database configuration (SQLite)
+### 4) Database (SQLite)
 
 ```bash
-touch database/database.sqlite
+type NUL > database\database.sqlite
 php artisan migrate
 ```
 
-### 5. Lunch the server
+### 5) Run
 
 ```bash
 php artisan serve
 ```
+
+## Notes
+
+- Ensure you eager-load the post author when needed, e.g. `Post::with('author')->paginate(10)`, so `author` appears in `PostResource`.
+- Login and register are rate-limited; exceeding the limit returns `429 Too Many Requests` temporarily.

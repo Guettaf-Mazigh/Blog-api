@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\v1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\UpdateUserRequest;
+use App\Http\Requests\StorePostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Http\Request;
@@ -14,7 +14,7 @@ class PostContoller extends Controller
         return PostResource::collection(Post::with('author')->paginate(10));
     }
 
-    public function store(UpdateUserRequest $request){
+    public function store(StorePostRequest $request){
         $data = $request->validated();
         $post = Post::create([
             'title' => $data['title'],

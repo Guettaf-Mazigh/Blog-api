@@ -7,6 +7,7 @@ use App\Http\Requests\StorePostRequest;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class PostContoller extends Controller
 {
@@ -23,5 +24,11 @@ class PostContoller extends Controller
         ]);
 
         return new PostResource($post->load('author'));
+    }
+
+    public function destroy(Post $post){
+        Gate::authorize('delete',$post);
+        $post->delete();
+        return response()->noContent();
     }
 }

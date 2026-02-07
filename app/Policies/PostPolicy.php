@@ -10,4 +10,8 @@ class PostPolicy
     public function create(User $user): bool {
         return $user->role === 'author';
     }
+
+    public function delete(User $user, Post $post){
+        return $user->role === 'admin' || $user->id === $post->user_id ;
+    }
 }

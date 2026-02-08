@@ -12,6 +12,10 @@ class PostPolicy
     }
 
     public function delete(User $user, Post $post){
-        return $user->role === 'admin' || $user->id === $post->user_id ;
+        return $user->role === 'admin' || ($user->id === $post->user_id && $user->role === 'author') ;
+    }
+
+    public function update(User $user, Post $post){
+        return $user->role === 'admin' || ($user->id === $post->user_id && $user->role === 'author');
     }
 }

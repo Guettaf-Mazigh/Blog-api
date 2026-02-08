@@ -27,6 +27,10 @@ A RESTful API for managing users and posts, built with **Laravel 12** and secure
 - **Posts**:
     - Public `GET /v1/posts` list.
     - Protected create/update/delete (behind `auth:sanctum`).
+    - Authorization via `PostPolicy`:
+        - Create: only users with role `author`.
+        - Update: `admin` or `author` who owns the post (`user_id`).
+        - Delete: `admin` or the owner of the post.
 - **Resources**: `UserResource` and `PostResource` to shape responses. `PostResource` includes `author` when the relation is eager-loaded.
 - **Rate limiting**: `throttle:10,1` (10 requests/minute) on `login` and `register`.
 - **Versioning**: All endpoints are namespaced under `/v1` to allow backwards-compatible changes.
@@ -40,15 +44,35 @@ Base path: `/api/v1`
 - `POST /logout` — Revoke current token (auth required).
 - `GET /user` — Current authenticated user (auth required).
 - `GET /posts` — List posts (public).
+- `GET /posts/{post}` — Show a single post (auth required; enforced via middleware).
 - `POST /posts` — Create post (auth required).
 - `PATCH /posts/{post}` — Update post (auth required).
 - `DELETE /posts/{post}` — Delete post (auth required).
 - `GET /users` — List users (auth required, admin by policy).
 - `GET /users/{user}` — Show user (auth required; owner/admin).
 - `PATCH /users/{user}` — Update user (auth required; owner/admin).
-- `DELETE /users/{user}` — Delete user (auth required; owner/admin).
 
-- `DELETE /users/{user}` — Delete user (auth required; owner/admin).
+## Authorization & Roles
+
+- Policies:
+    - `UserPolicy`: owners can view/update/delete their own record; admins can list all users.
+    - `PostPolicy`: only `author` can create; `admin` or `author` owner can update/delete.
+- Middleware:
+    - `auth:sanctum` protects `GET /v1/posts/{post}` (no `view` policy needed unless you add draft/private logic).
+- FormRequests:
+    - `StorePostRequest::authorize()` uses `can('create', Post::class)`.
+    - `UpdatePostRequest::authorize()` uses `can('update', $this->route('post'))`.
+- Controller usage:
+    - `PostContoller@store()` sets `user_id` from the authenticated user (not from client input).
+    - `PostContoller@update()` applies validated partial updates; `PostContoller@destroy()` authorizes and deletes.
+
+## Data Model
+
+- Relationships:
+    - `Post` belongs to `User` via `author()` (`user_id` foreign key).
+    - `User` has many `Post` via `post()`.
+- Resources:
+    - `PostResource` includes `author` when the relation is eager-loaded.
 
 ## Versioning
 

@@ -18,7 +18,7 @@ Route::prefix('/v1')->group(function () {
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('users', UserController::class)->only(['index', 'show', 'update', 'destroy']);
-        Route::apiResource('posts',PostContoller::class)->only(['store', 'update', 'destroy']);
+        Route::apiResource('posts',PostContoller::class)->only(['show' ,'store', 'update', 'destroy']);
     });
     Route::get('/posts',[PostContoller::class,'index'])->name('posts.index');
 });

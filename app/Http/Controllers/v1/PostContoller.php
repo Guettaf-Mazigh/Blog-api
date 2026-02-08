@@ -12,11 +12,13 @@ use Illuminate\Support\Facades\Gate;
 
 class PostContoller extends Controller
 {
-    public function index(){
+    public function index()
+    {
         return PostResource::collection(Post::with('author')->paginate(10));
     }
 
-    public function store(StorePostRequest $request){
+    public function store(StorePostRequest $request)
+    {
         $data = $request->validated();
         $post = Post::create([
             'title' => $data['title'],
@@ -27,24 +29,31 @@ class PostContoller extends Controller
         return new PostResource($post->load('author'));
     }
 
-    public function destroy(Post $post){
-        Gate::authorize('delete',$post);
+    public function destroy(Post $post)
+    {
+        Gate::authorize('delete', $post);
         $post->delete();
         return response()->noContent();
     }
 
-    public function update(UpdatePostRequest $request,Post $post){
+    public function update(UpdatePostRequest $request, Post $post)
+    {
         $data = $request->validated();
         $updates = [];
-        if(array_key_exists('title',$data)){
+        if (array_key_exists('title', $data)) {
             $updates['title'] = $data['title'];
         }
-        if(array_key_exists('content',$data)){
+        if (array_key_exists('content', $data)) {
             $updates['content'] = $data['content'];
         }
-        if(!empty($updates)){
+        if (!empty($updates)) {
             $post->update($updates);
         }
+        return new PostResource($post->load('author'));
+    }
+
+    public function show(Post $post)
+    {
         return new PostResource($post->load('author'));
     }
 }

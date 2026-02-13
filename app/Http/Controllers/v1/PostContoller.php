@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostResource;
+use App\Models\ApprovalRequest;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -25,7 +26,7 @@ class PostContoller extends Controller
             'content' => $data['content'],
             'user_id' => $request->user()->id
         ]);
-
+        $post->approvalRequest()->create(['user_id' => $request->user()->id]);
         return new PostResource($post->load('author'));
     }
 
